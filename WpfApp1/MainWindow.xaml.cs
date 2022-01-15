@@ -33,65 +33,60 @@ namespace WpfApp1
                 }
             }
         }
-
+        private void Resize()
+        {
+            if (TextLabel.Text.Length >= 7 && TextLabel.Text.Length < 10) TextLabel.FontSize = 48;
+            else if (TextLabel.Text.Length >= 10 && TextLabel.Text.Length < 14) TextLabel.FontSize = 36;
+            else if (TextLabel.Text.Length >= 14) TextLabel.FontSize = 24;
+            else TextLabel.FontSize = 72;
+        }
+        private void Operation(string str)
+        {
+            string[] operands = {"%","+","-","*","/","√",","};
+            if (TextLabel.Text.Length != 0 && (str == "%" || str == "+" || str == "-" ||
+                    str == "*" || str == "/" || str == "√" || str == ","))
+                {
+                    string LastCharOfTextLabel = TextLabel.Text[TextLabel.Text.Length - 1].ToString();
+                    int sum = 0;
+                    foreach( string i in operands)
+                    { 
+                        if (LastCharOfTextLabel == i)
+                        {
+                            sum += 1;
+                        }
+                    }
+                    if(sum != 1) TextLabel.Text  += str;
+                }
+                else
+                {
+                    TextLabel.Text += str;
+                }
+        }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             string str = (string)((Button)e.OriginalSource).Content;
+            
             if (str == "C")
                 {
                     TextLabel.Text = "";
                 }
             else if (str == "=")
                 {
-                    string value = new DataTable().Compute(TextLabel.Text, null).ToString();
-                    TextLabel.Text = value;
+                    //надо код закинуть try и отлавливать ошибку когда последнее значение в Textlabel.text является не числа а знак
+                    // если так не сделать то будет вылетать с ошибкой 
+                    try {
+                        string value = new DataTable().Compute(TextLabel.Text, null).ToString();
+                        TextLabel.Text = value;
+                    }catch{
+                        Console.WriteLine("last char is operand send number");
+                    }
                 }
             else if (TextLabel.Text.Length < 20)
             {
-                if (TextLabel.Text.Length != 0 && (str == "%" || str == "+" || str == "-" ||
-                    str == "*" || str == "/" || str == "√" || str == ","))
-                {
-                    string LastCharOfTextLabel = TextLabel.Text[TextLabel.Text.Length - 1].ToString();
-
-                    if (LastCharOfTextLabel == "%" || LastCharOfTextLabel == "+"
-                        || LastCharOfTextLabel == "-" || LastCharOfTextLabel == "*"
-                        || LastCharOfTextLabel == "/" || LastCharOfTextLabel == "√"
-                        || LastCharOfTextLabel == ",")
-                    {
-                        //Do nothing
-                        str = "";
-                    }
-
-                    else
-                    {
-                        TextLabel.Text += str;
-                    }
-
-                }
-                else if (str == "%" || str == "+" || str == "-" ||
-                    str == "*" || str == "/" || str == "√" || str == ",")
-                {
-                    if (TextLabel.Text == "")
-                    {
-                        str = "";
-                    }
-                    else
-                    {
-                        TextLabel.Text += str;
-                    }
-                }
-                else
-                {
-                    TextLabel.Text += str;
-                }
-
+                Operation(str);
                 //Регулирование размера текста
-                if (TextLabel.Text.Length >= 7 && TextLabel.Text.Length < 10) TextLabel.FontSize = 48;
-                else if (TextLabel.Text.Length >= 10 && TextLabel.Text.Length < 14) TextLabel.FontSize = 36;
-                else if (TextLabel.Text.Length >= 14) TextLabel.FontSize = 24;
-                else TextLabel.FontSize = 72;
+                Resize();
             }
-            else str = "";
         }
     }
 }
